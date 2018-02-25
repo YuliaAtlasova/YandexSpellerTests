@@ -1,9 +1,7 @@
 package core;
 
-/**
- * Created by yulia_atlasova@epam.com on 22/06/2017.
- * Constants of YandexSpeller
- */
+import lombok.Getter;
+
 public class YandexSpellerConstants {
 
     //useful constants for API under test
@@ -18,14 +16,4 @@ public class YandexSpellerConstants {
     public static final String WORD_WITH_LEADING_DIGITS = "11" + RIGHT_WORD_EN;
 
 
-    public enum Languages {
-        RU("ru"),
-        UK("uk"),
-        EN("en");
-        String languageCode;
-
-        private Languages(String lang) {
-            this.languageCode = lang;
-        }
-    }
 }
