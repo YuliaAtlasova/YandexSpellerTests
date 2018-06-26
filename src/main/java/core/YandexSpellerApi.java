@@ -86,6 +86,7 @@ public class YandexSpellerApi {
     public static RequestSpecification baseRequestConfiguration(){
         return new RequestSpecBuilder()
                 .setAccept(ContentType.XML)
+                .setRelaxedHTTPSValidation()
                 .addHeader("custom header2", "header2.value")
                 .addQueryParam("requestID", new Random().nextLong())
                 .setBaseUri(YANDEX_SPELLER_API_URI)
