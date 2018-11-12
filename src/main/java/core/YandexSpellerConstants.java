@@ -11,19 +11,35 @@ public class YandexSpellerConstants {
     public static final String PARAM_TEXT = "text";
     public static final String PARAM_OPTIONS = "options";
     public static final String PARAM_LANG = "lang";
-    public static final String WRONG_WORD_EN = "requisitee";
-    public static final String RIGHT_WORD_EN = "requisite";
     public static final String WRONG_WORD_UK = "питаня";
     public static final String WORD_WITH_WRONG_CAPITAL = "moscow";
-    public static final String WORD_WITH_LEADING_DIGITS = "11" + RIGHT_WORD_EN;
+    public static final String WORD_WITH_LEADING_DIGITS = "11" + SimpleWord.BROTHER.corrVer;
     public static final String QUOTES = "\"";
 
+
+    public enum SimpleWord{
+        MOTHER("mother", "mottherr"),
+        BROTHER("brother", "bbrother");
+
+        private String corrVer;
+        private String wrongVer;
+
+        public String corrVer(){return corrVer;}
+        public String wrongVer(){return wrongVer;}
+
+        private SimpleWord(String corrVer, String wrongVer){
+            this.corrVer = corrVer;
+            this.wrongVer = wrongVer;
+
+        }
+    }
 
     public enum Language {
         RU("ru"),
         UK("uk"),
         EN("en");
-        String languageCode;
+        private String languageCode;
+        public String langCode(){return languageCode;}
 
         private Language(String lang) {
             this.languageCode = lang;

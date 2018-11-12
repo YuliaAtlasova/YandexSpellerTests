@@ -26,8 +26,8 @@ public class TestYandexSpellerJSON {
     public void simpleSpellerApiCall() {
         RestAssured
                 .given()
-                .queryParam(PARAM_TEXT, WRONG_WORD_EN)
-                .params(PARAM_LANG, Language.EN, "CustomParameter", "valueOfParam")
+                .queryParam("text", "requisitee")
+                .params("lang", "en", "CustomParameter", "valueOfParam")
                 .accept(ContentType.JSON)
                 .auth().basic("abcName", "abcPassword")
                 .header("custom header1", "header1.value")
@@ -38,11 +38,10 @@ public class TestYandexSpellerJSON {
                 .get(YANDEX_SPELLER_API_URI)
                 .prettyPeek()
                 .then()
-
                 .assertThat()
                 .statusCode(HttpStatus.SC_OK)
                 .body(Matchers.allOf(
-                        Matchers.stringContainsInOrder(Arrays.asList(WRONG_WORD_EN, RIGHT_WORD_EN)),
+                        Matchers.stringContainsInOrder(Arrays.asList("requisitee", "requisite")),
                         Matchers.containsString("\"code\":1")))
                 .contentType(ContentType.JSON)
                 .time(lessThan(20000L)); // Milliseconds
@@ -54,7 +53,7 @@ public class TestYandexSpellerJSON {
         //GET
         RestAssured
                 .given()
-                .param(PARAM_TEXT, WRONG_WORD_EN)
+                .param(PARAM_TEXT, SimpleWord.BROTHER.wrongVer())
                 .log().everything()
                 .get(YANDEX_SPELLER_API_URI)
                 .prettyPeek();
@@ -63,7 +62,7 @@ public class TestYandexSpellerJSON {
         //POST
         RestAssured
                 .given()
-                .param(PARAM_TEXT, WRONG_WORD_EN)
+                .param(PARAM_TEXT, SimpleWord.BROTHER.wrongVer())
                 .log().everything()
                 .post(YANDEX_SPELLER_API_URI)
                 .prettyPeek();
@@ -72,7 +71,7 @@ public class TestYandexSpellerJSON {
         //HEAD
         RestAssured
                 .given()
-                .param(PARAM_TEXT, WRONG_WORD_EN)
+                .param(PARAM_TEXT, SimpleWord.BROTHER.wrongVer())
                 .log().everything()
                 .head(YANDEX_SPELLER_API_URI)
                 .prettyPeek();
@@ -81,7 +80,7 @@ public class TestYandexSpellerJSON {
         //OPTIONS
         RestAssured
                 .given()
-                .param(PARAM_TEXT, WRONG_WORD_EN)
+                .param(PARAM_TEXT, SimpleWord.BROTHER.wrongVer())
                 .log().everything()
                 .options(YANDEX_SPELLER_API_URI)
                 .prettyPeek();
@@ -90,7 +89,7 @@ public class TestYandexSpellerJSON {
         //PUT
         RestAssured
                 .given()
-                .param(PARAM_TEXT, WRONG_WORD_EN)
+                .param(PARAM_TEXT, SimpleWord.BROTHER.wrongVer())
                 .log().everything()
                 .put(YANDEX_SPELLER_API_URI)
                 .prettyPeek();
@@ -99,7 +98,7 @@ public class TestYandexSpellerJSON {
         //PATCH
         RestAssured
                 .given()
-                .param(PARAM_TEXT, WRONG_WORD_EN)
+                .param(PARAM_TEXT, SimpleWord.BROTHER.wrongVer())
                 .log()
                 .everything()
                 .patch(YANDEX_SPELLER_API_URI)
@@ -109,7 +108,7 @@ public class TestYandexSpellerJSON {
         //DELETE
         RestAssured
                 .given()
-                .param(PARAM_TEXT, WRONG_WORD_EN)
+                .param(PARAM_TEXT, SimpleWord.BROTHER.wrongVer())
                 .log()
                 .everything()
                 .delete(YANDEX_SPELLER_API_URI).prettyPeek()
@@ -124,7 +123,7 @@ public class TestYandexSpellerJSON {
     public void useBaseRequestAndResponseSpecifications() {
         RestAssured
                 .given(YandexSpellerApi.baseRequestConfiguration())
-                .param(PARAM_TEXT, WRONG_WORD_EN)
+                .param(PARAM_TEXT, SimpleWord.BROTHER.wrongVer())
                 .get().prettyPeek()
                 .then().specification(YandexSpellerApi.successResponse());
     }
@@ -145,13 +144,13 @@ public class TestYandexSpellerJSON {
     public void validateSpellerAnswerAsAnObject() {
         List<YandexSpellerAnswer> answers =
                 YandexSpellerApi.getYandexSpellerAnswers(
-                        YandexSpellerApi.with().text("motherr fatherr," + WRONG_WORD_EN).callApi());
+                        YandexSpellerApi.with().text("motherr fatherr," + SimpleWord.BROTHER.wrongVer()).callApi());
         assertThat("expected number of answers is wrong.", answers.size(), equalTo(3));
         assertThat(answers.get(0).word, equalTo("motherr"));
         assertThat(answers.get(1).word, equalTo("fatherr"));
         assertThat(answers.get(0).s.get(0), equalTo("mother"));
         assertThat(answers.get(1).s.get(0), equalTo("father"));
-        assertThat(answers.get(2).s.get(0), equalTo(RIGHT_WORD_EN));
+        assertThat(answers.get(2).s.get(0), equalTo(SimpleWord.BROTHER.wrongVer()));
     }
 
 

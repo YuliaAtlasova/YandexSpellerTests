@@ -51,7 +51,7 @@ public class YandexSpellerSOAP {
         }
 
         public YandexSpellerSOAP.SOAPBuilder language(Language language) {
-            soapReq.params.put(PARAM_LANG,   language.languageCode);
+            soapReq.params.put(PARAM_LANG,   language.langCode());
             return this;
         }
 
@@ -62,7 +62,7 @@ public class YandexSpellerSOAP {
                     "      <spel:" + soapReq.action.reqName + " lang=" + QUOTES + (soapReq.params.getOrDefault(PARAM_LANG, "en")) + QUOTES
                     +  " options=" + QUOTES + (soapReq.params.getOrDefault(PARAM_OPTIONS, "0"))+ QUOTES
                     + " format=\"\">\n" +
-                    "         <spel:text>"+ (soapReq.params.getOrDefault(PARAM_TEXT, WRONG_WORD_EN)) + "</spel:text>\n" +
+                    "         <spel:text>"+ (soapReq.params.getOrDefault(PARAM_TEXT, SimpleWord.BROTHER.wrongVer())) + "</spel:text>\n" +
                     "      </spel:"+ soapReq.action.reqName + ">\n" +
                     "   </soapenv:Body>\n" +
                     "</soapenv:Envelope>";
