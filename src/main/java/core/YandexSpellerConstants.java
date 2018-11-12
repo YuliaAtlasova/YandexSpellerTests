@@ -1,7 +1,7 @@
 package core;
 
 /**
- * Created by yulia_atlasova@epam.com on 22/06/2017.
+ * Created by yulia_atlasova@epam.com.
  * Constants of YandexSpeller
  */
 public class YandexSpellerConstants {
@@ -16,16 +16,29 @@ public class YandexSpellerConstants {
     public static final String WRONG_WORD_UK = "питаня";
     public static final String WORD_WITH_WRONG_CAPITAL = "moscow";
     public static final String WORD_WITH_LEADING_DIGITS = "11" + RIGHT_WORD_EN;
+    public static final String QUOTES = "\"";
 
 
-    public enum Languages {
+    public enum Language {
         RU("ru"),
         UK("uk"),
         EN("en");
         String languageCode;
 
-        private Languages(String lang) {
+        private Language(String lang) {
             this.languageCode = lang;
+        }
+    }
+
+    public enum SoapAction {
+        CHECK_TEXT("checkText", "CheckTextRequest"),
+        CHECK_TEXTS("checkTexts", "CheckTextsRequest");
+        String method;
+        String reqName;
+
+        private SoapAction(String action, String reqName) {
+            this.method = action;
+            this.reqName = reqName;
         }
     }
 }

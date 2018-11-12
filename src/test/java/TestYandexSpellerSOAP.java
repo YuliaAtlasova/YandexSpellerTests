@@ -7,7 +7,7 @@ import java.util.Arrays;
 import static core.YandexSpellerConstants.*;
 
 /**
- * Created by yulia_atlasova@epam.com on 22/06/2017.
+ * Created by yulia_atlasova@epam.com.
  * try to test SOAP via RestAssured
  */
 public class TestYandexSpellerSOAP {
@@ -24,9 +24,10 @@ public class TestYandexSpellerSOAP {
     @Test
     public void useRequestBuilderToChangeParams(){
         YandexSpellerSOAP.with()
-                .language(Languages.EN)
+                .language(Language.EN)
                 .text(WRONG_WORD_EN)
                 .options("6")
+                .action(SoapAction.CHECK_TEXTS)
                 .callSOAP()
                 .then()
                 .body(Matchers.stringContainsInOrder(Arrays.asList(WRONG_WORD_EN, RIGHT_WORD_EN)));

@@ -2,10 +2,7 @@ import beans.YandexSpellerAnswer;
 import core.YandexSpellerApi;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.response.Response;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
-import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
@@ -30,7 +27,7 @@ public class TestYandexSpellerJSON {
         RestAssured
                 .given()
                 .queryParam(PARAM_TEXT, WRONG_WORD_EN)
-                .params(PARAM_LANG, Languages.EN, "CustomParameter", "valueOfParam")
+                .params(PARAM_LANG, Language.EN, "CustomParameter", "valueOfParam")
                 .accept(ContentType.JSON)
                 .auth().basic("abcName", "abcPassword")
                 .header("custom header1", "header1.value")
@@ -135,7 +132,7 @@ public class TestYandexSpellerJSON {
     @Test
     public void reachBuilderUsage(){
         YandexSpellerApi.with()
-                .language(Languages.UK)
+                .language(Language.UK)
                 .options("5")
                 .text(WRONG_WORD_UK)
                 .callApi()

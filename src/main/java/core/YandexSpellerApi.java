@@ -48,7 +48,7 @@ public class YandexSpellerApi {
             return this;
         }
 
-        public ApiBuilder language(Languages language) {
+        public ApiBuilder language(Language language) {
             spellerApi.params.put(PARAM_LANG, language.languageCode);
             return this;
         }
