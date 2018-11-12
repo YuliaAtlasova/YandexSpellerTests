@@ -3,6 +3,7 @@ import core.YandexSpellerApi;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -12,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static core.YandexSpellerConstants.*;
+import static org.apache.commons.lang3.StringUtils.repeat;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.lessThan;
@@ -59,7 +61,7 @@ public class TestYandexSpellerJSON {
                 .log().everything()
                 .get(YANDEX_SPELLER_API_URI)
                 .prettyPeek();
-        System.out.println("\n=====================================================================");
+        System.out.println(repeat("=", 100));
 
         //POST
         RestAssured
@@ -68,7 +70,7 @@ public class TestYandexSpellerJSON {
                 .log().everything()
                 .post(YANDEX_SPELLER_API_URI)
                 .prettyPeek();
-        System.out.println("\n=====================================================================");
+        System.out.println(repeat("=", 100));
 
         //HEAD
         RestAssured
@@ -77,7 +79,7 @@ public class TestYandexSpellerJSON {
                 .log().everything()
                 .head(YANDEX_SPELLER_API_URI)
                 .prettyPeek();
-        System.out.println("\n=====================================================================");
+        System.out.println(repeat("=", 100));
 
         //OPTIONS
         RestAssured
@@ -86,7 +88,7 @@ public class TestYandexSpellerJSON {
                 .log().everything()
                 .options(YANDEX_SPELLER_API_URI)
                 .prettyPeek();
-        System.out.println("\n=====================================================================");
+        System.out.println(repeat("=", 100));
 
         //PUT
         RestAssured
@@ -95,7 +97,7 @@ public class TestYandexSpellerJSON {
                 .log().everything()
                 .put(YANDEX_SPELLER_API_URI)
                 .prettyPeek();
-        System.out.println("\n=====================================================================");
+        System.out.println(repeat("=", 100));
 
         //PATCH
         RestAssured
@@ -105,7 +107,7 @@ public class TestYandexSpellerJSON {
                 .everything()
                 .patch(YANDEX_SPELLER_API_URI)
                 .prettyPeek();
-        System.out.println("\n=====================================================================");
+        System.out.println(repeat("=", 100));
 
         //DELETE
         RestAssured
