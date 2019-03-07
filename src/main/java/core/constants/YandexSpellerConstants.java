@@ -1,4 +1,4 @@
-package core;
+package core.constants;
 
 /**
  * Created by yulia_atlasova@epam.com on 22/06/2017.
@@ -21,7 +21,7 @@ public class YandexSpellerConstants {
         RU("ru"),
         UK("uk"),
         EN("en");
-        String languageCode;
+        public String languageCode;
 
         private Languages(String lang) {
             this.languageCode = lang;
@@ -45,5 +45,18 @@ public class YandexSpellerConstants {
         }
     }
 
+    public enum CorrectTexts {
+        RUSSIAN("Этот текст на русском языке"),
+        URL_TEXT("This text contains URL http://yandex.ru");
+        private String text;
+
+        public String text() {
+            return text;
+        }
+
+        private CorrectTexts(String text) {
+            this.text = text;
+        }
+    }
 
 }

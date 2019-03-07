@@ -4,10 +4,10 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
-import static core.YandexSpellerConstants.*;
+import static core.constants.YandexSpellerConstants.*;
 
 /**
- * Created by yulia_atlasova@epam.com on 22/06/2017.
+ * Created by yulia_atlasova@epam.com.
  * try to test SOAP via RestAssured
  */
 public class TestYandexSpellerSOAP {

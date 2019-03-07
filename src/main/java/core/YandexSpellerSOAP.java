@@ -7,7 +7,7 @@ import io.restassured.specification.RequestSpecification;
 
 import java.util.HashMap;
 
-import static core.YandexSpellerConstants.*;
+import static core.constants.YandexSpellerConstants.*;
 
 /**
  * Created by yulia_atlasova@epam.com on 22/06/2017.

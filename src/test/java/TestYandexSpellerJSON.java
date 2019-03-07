@@ -1,20 +1,25 @@
 import beans.YandexSpellerAnswer;
-import core.YandexSpellerApi;
+import core.YandexSpellerCheckTextApi;
+import core.constants.IncorrectTexts;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
-import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
+import org.hamcrest.core.IsEqual;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static core.YandexSpellerConstants.*;
+import static core.YandexSpellerCheckTextApi.successResponse;
+import static core.constants.Options.*;
+import static core.constants.YandexSpellerConstants.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.core.IsCollectionContaining.hasItem;
 
 
 /**
@@ -28,18 +33,17 @@ public class TestYandexSpellerJSON {
         RestAssured
                 .given()
                 .queryParam(PARAM_TEXT, WRONG_WORD_EN)
-                .params(PARAM_LANG, Languages.EN, "CustomParameter", "valueOfParam")
+                .params(PARAM_LANG, Languages.EN,
+                        "CustomParameter", "valueOfParam")
                 .accept(ContentType.JSON)
                 .auth().basic("abcName", "abcPassword")
                 .header("custom header1", "header1.value")
                 .and()
                 .body("some body payroll")
                 .log().everything()
-                .when()
-                .get(YANDEX_SPELLER_API_URI)
+                .get(YandexSpellerCheckTextApi.YANDEX_SPELLER_API_URI)
                 .prettyPeek()
                 .then()
-
                 .assertThat()
                 .statusCode(HttpStatus.SC_OK)
                 .body(Matchers.allOf(
@@ -52,68 +56,21 @@ public class TestYandexSpellerJSON {
     // different http methods calls
     @Test
     public void spellerApiCallsWithDifferentMethods() {
-        //GET
+        //GET //POST //HEAD //OPTIONS
         RestAssured
                 .given()
                 .param(PARAM_TEXT, WRONG_WORD_EN)
                 .log().everything()
-                .get(YANDEX_SPELLER_API_URI)
+                .patch (YandexSpellerCheckTextApi.YANDEX_SPELLER_API_URI)
                 .prettyPeek();
-        System.out.println("\n=====================================================================");
 
-        //POST
-        RestAssured
-                .given()
-                .param(PARAM_TEXT, WRONG_WORD_EN)
-                .log().everything()
-                .post(YANDEX_SPELLER_API_URI)
-                .prettyPeek();
-        System.out.println("\n=====================================================================");
-
-        //HEAD
-        RestAssured
-                .given()
-                .param(PARAM_TEXT, WRONG_WORD_EN)
-                .log().everything()
-                .head(YANDEX_SPELLER_API_URI)
-                .prettyPeek();
-        System.out.println("\n=====================================================================");
-
-        //OPTIONS
-        RestAssured
-                .given()
-                .param(PARAM_TEXT, WRONG_WORD_EN)
-                .log().everything()
-                .options(YANDEX_SPELLER_API_URI)
-                .prettyPeek();
-        System.out.println("\n=====================================================================");
-
-        //PUT
-        RestAssured
-                .given()
-                .param(PARAM_TEXT, WRONG_WORD_EN)
-                .log().everything()
-                .put(YANDEX_SPELLER_API_URI)
-                .prettyPeek();
-        System.out.println("\n=====================================================================");
-
-        //PATCH
+        //DELETE  //PUT  //PATCH
         RestAssured
                 .given()
                 .param(PARAM_TEXT, WRONG_WORD_EN)
                 .log()
                 .everything()
-                .patch(YANDEX_SPELLER_API_URI)
-                .prettyPeek();
-        System.out.println("\n=====================================================================");
-
-        //DELETE
-        RestAssured
-                .given()
-                .param(PARAM_TEXT, WRONG_WORD_EN)
-                .log()
-                .everything()
-                .delete(YANDEX_SPELLER_API_URI).prettyPeek()
+                .delete(YandexSpellerCheckTextApi.YANDEX_SPELLER_API_URI).prettyPeek()
                 .then()
                 .statusCode(HttpStatus.SC_METHOD_NOT_ALLOWED)
                 .statusLine("HTTP/1.1 405 Method not allowed");
@@ -124,20 +81,20 @@ public class TestYandexSpellerJSON {
     @Test
     public void useBaseRequestAndResponseSpecifications() {
         RestAssured
-                .given(YandexSpellerApi.baseRequestConfiguration())
+                .given(YandexSpellerCheckTextApi.baseRequestConfiguration())
                 .param(PARAM_TEXT, WRONG_WORD_EN)
                 .get().prettyPeek()
-                .then().specification(YandexSpellerApi.successResponse());
+                .then().specification(successResponse());
     }
 
     @Test
     public void reachBuilderUsage(){
-        YandexSpellerApi.with()
+        YandexSpellerCheckTextApi.with()
                 .language(Languages.UK)
-                .options("5")
+                .options(computeOptions(IGNORE_DIGITS, IGNORE_URLS, IGNORE_CAPITALIZATION, FIND_REPEAT_WORDS))
                 .text(WRONG_WORD_UK)
                 .callApi()
-                .then().specification(YandexSpellerApi.successResponse());
+                .then().specification(successResponse());
     }
 
 
@@ -145,8 +102,8 @@ public class TestYandexSpellerJSON {
     @Test
     public void validateSpellerAnswerAsAnObject() {
         List<YandexSpellerAnswer> answers =
-                YandexSpellerApi.getYandexSpellerAnswers(
-                        YandexSpellerApi.with().text("motherr fatherr," + WRONG_WORD_EN).callApi());
+                YandexSpellerCheckTextApi.getYandexSpellerAnswers(
+                        YandexSpellerCheckTextApi.with().text("motherr fatherr," + WRONG_WORD_EN).callApi());
         assertThat("expected number of answers is wrong.", answers.size(), equalTo(3));
         assertThat(answers.get(0).word, equalTo("motherr"));
         assertThat(answers.get(1).word, equalTo("fatherr"));
@@ -159,10 +116,10 @@ public class TestYandexSpellerJSON {
     @Test
     public void optionsValueIgnoreDigits(){
         List<YandexSpellerAnswer> answers =
-                YandexSpellerApi.getYandexSpellerAnswers(
-                        YandexSpellerApi.with().
+                YandexSpellerCheckTextApi.getYandexSpellerAnswers(
+                        YandexSpellerCheckTextApi.with().
                                 text(WORD_WITH_LEADING_DIGITS)
-                                .options("2")
+                                .options(IGNORE_DIGITS.getCode())
                                 .callApi());
         assertThat("expected number of answers is wrong.", answers.size(), equalTo(0));
     }
@@ -170,11 +127,29 @@ public class TestYandexSpellerJSON {
     @Test
     public void optionsIgnoreWrongCapital(){
         List<YandexSpellerAnswer> answers =
-                YandexSpellerApi.getYandexSpellerAnswers(
-                        YandexSpellerApi.with().
+                YandexSpellerCheckTextApi.getYandexSpellerAnswers(
+                        YandexSpellerCheckTextApi.with().
                                 text(WORD_WITH_WRONG_CAPITAL)
                                 .options("512")
                                 .callApi());
         assertThat("expected number of answers is wrong.", answers.size(), equalTo(0));
+    }
+
+    @Test//(description = "Check Russian text with English letters in it")
+    public void checkRusTextWithEngLetters() {
+        List<YandexSpellerAnswer> answers =
+                YandexSpellerCheckTextApi.getYandexSpellerAnswers(
+                        YandexSpellerCheckTextApi.with()
+                .text(IncorrectTexts.RUSSIAN_ENG_LETTER.text())
+                .language(Languages.RU)
+                .callApi()
+                                .then()
+                                .specification(successResponse())
+                                .extract().response());
+
+        // Check that answers size is 2
+        assertThat(answers.size(), IsEqual.equalTo(2));
+        assertThat(answers.get(0).toString(), isEmptyOrNullString());
+
     }
 }
