@@ -51,7 +51,7 @@ public class YandexSpellerCheckTextApi {
             return this;
         }
 
-        public ApiBuilder language(YandexSpellerConstants.Languages language) {
+        public ApiBuilder language(YandexSpellerConstants.Language language) {
             spellerApi.params.put(YandexSpellerConstants.PARAM_LANG, language.languageCode);
             return this;
         }

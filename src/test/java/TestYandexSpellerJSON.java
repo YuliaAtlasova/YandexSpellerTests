@@ -1,12 +1,10 @@
 import beans.YandexSpellerAnswer;
 import core.YandexSpellerCheckTextApi;
-import core.constants.IncorrectTexts;
+import core.constants.Options;
+import core.constants.TestText;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.apache.http.HttpStatus;
-import org.hamcrest.Matchers;
-import org.hamcrest.core.IsEqual;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -16,10 +14,7 @@ import static core.YandexSpellerCheckTextApi.successResponse;
 import static core.constants.Options.*;
 import static core.constants.YandexSpellerConstants.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.isEmptyOrNullString;
-import static org.hamcrest.Matchers.lessThan;
-import static org.hamcrest.core.IsCollectionContaining.hasItem;
+import static org.hamcrest.Matchers.*;
 
 
 /**
@@ -32,8 +27,8 @@ public class TestYandexSpellerJSON {
     public void simpleSpellerApiCall() {
         RestAssured
                 .given()
-                .queryParam(PARAM_TEXT, WRONG_WORD_EN)
-                .params(PARAM_LANG, Languages.EN,
+                .queryParam(PARAM_TEXT, TestText.MOTHER.wrongVer())
+                .params(PARAM_LANG, Language.EN,
                         "CustomParameter", "valueOfParam")
                 .accept(ContentType.JSON)
                 .auth().basic("abcName", "abcPassword")
@@ -46,9 +41,10 @@ public class TestYandexSpellerJSON {
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.SC_OK)
-                .body(Matchers.allOf(
-                        Matchers.stringContainsInOrder(Arrays.asList(WRONG_WORD_EN, RIGHT_WORD_EN)),
-                        Matchers.containsString("\"code\":1")))
+                .body(allOf(
+                        stringContainsInOrder(Arrays.asList(TestText.MOTHER.wrongVer(),
+                                TestText.MOTHER.corrVer())),
+                        containsString("\"code\":1")))
                 .contentType(ContentType.JSON)
                 .time(lessThan(20000L)); // Milliseconds
     }
@@ -59,7 +55,7 @@ public class TestYandexSpellerJSON {
         //GET //POST //HEAD //OPTIONS
         RestAssured
                 .given()
-                .param(PARAM_TEXT, WRONG_WORD_EN)
+                .param(PARAM_TEXT, TestText.BROTHER.wrongVer())
                 .log().everything()
                 .patch (YandexSpellerCheckTextApi.YANDEX_SPELLER_API_URI)
                 .prettyPeek();
@@ -67,7 +63,7 @@ public class TestYandexSpellerJSON {
         //DELETE  //PUT  //PATCH
         RestAssured
                 .given()
-                .param(PARAM_TEXT, WRONG_WORD_EN)
+                .param(PARAM_TEXT, TestText.BROTHER.wrongVer())
                 .log()
                 .everything()
                 .delete(YandexSpellerCheckTextApi.YANDEX_SPELLER_API_URI).prettyPeek()
@@ -82,7 +78,7 @@ public class TestYandexSpellerJSON {
     public void useBaseRequestAndResponseSpecifications() {
         RestAssured
                 .given(YandexSpellerCheckTextApi.baseRequestConfiguration())
-                .param(PARAM_TEXT, WRONG_WORD_EN)
+                .param(PARAM_TEXT, TestText.BROTHER.wrongVer())
                 .get().prettyPeek()
                 .then().specification(successResponse());
     }
@@ -90,9 +86,9 @@ public class TestYandexSpellerJSON {
     @Test
     public void reachBuilderUsage(){
         YandexSpellerCheckTextApi.with()
-                .language(Languages.UK)
+                .language(Language.UK)
                 .options(computeOptions(IGNORE_DIGITS, IGNORE_URLS, IGNORE_CAPITALIZATION, FIND_REPEAT_WORDS))
-                .text(WRONG_WORD_UK)
+                .text(TestText.UK_WORD.wrongVer())
                 .callApi()
                 .then().specification(successResponse());
     }
@@ -103,13 +99,13 @@ public class TestYandexSpellerJSON {
     public void validateSpellerAnswerAsAnObject() {
         List<YandexSpellerAnswer> answers =
                 YandexSpellerCheckTextApi.getYandexSpellerAnswers(
-                        YandexSpellerCheckTextApi.with().text("motherr fatherr," + WRONG_WORD_EN).callApi());
+                        YandexSpellerCheckTextApi.with().text("motherr fatherr," + TestText.BROTHER.wrongVer()).callApi());
         assertThat("expected number of answers is wrong.", answers.size(), equalTo(3));
         assertThat(answers.get(0).word, equalTo("motherr"));
         assertThat(answers.get(1).word, equalTo("fatherr"));
         assertThat(answers.get(0).s.get(0), equalTo("mother"));
         assertThat(answers.get(1).s.get(0), equalTo("father"));
-        assertThat(answers.get(2).s.get(0), equalTo(RIGHT_WORD_EN));
+        assertThat(answers.get(2).s.get(0), equalTo(TestText.BROTHER.corrVer()));
     }
 
 
@@ -118,7 +114,7 @@ public class TestYandexSpellerJSON {
         List<YandexSpellerAnswer> answers =
                 YandexSpellerCheckTextApi.getYandexSpellerAnswers(
                         YandexSpellerCheckTextApi.with().
-                                text(WORD_WITH_LEADING_DIGITS)
+                                text(TestText.EN_WITH_DIGITS.wrongVer())
                                 .options(IGNORE_DIGITS.getCode())
                                 .callApi());
         assertThat("expected number of answers is wrong.", answers.size(), equalTo(0));
@@ -129,27 +125,27 @@ public class TestYandexSpellerJSON {
         List<YandexSpellerAnswer> answers =
                 YandexSpellerCheckTextApi.getYandexSpellerAnswers(
                         YandexSpellerCheckTextApi.with().
-                                text(WORD_WITH_WRONG_CAPITAL)
-                                .options("512")
+                                text(TestText.RU_WRONG_CAPITAL.wrongVer())
+                                .options(Options.IGNORE_DIGITS.getCode())
                                 .callApi());
         assertThat("expected number of answers is wrong.", answers.size(), equalTo(0));
     }
 
-    @Test//(description = "Check Russian text with English letters in it")
+    @Test//(description = "Check English text with Ru language parameter")
     public void checkRusTextWithEngLetters() {
         List<YandexSpellerAnswer> answers =
                 YandexSpellerCheckTextApi.getYandexSpellerAnswers(
                         YandexSpellerCheckTextApi.with()
-                .text(IncorrectTexts.RUSSIAN_ENG_LETTER.text())
-                .language(Languages.RU)
+                .text(TestText.MOTHER.wrongVer() + ", " + TestText.RU_WORD.wrongVer())
+                .language(Language.RU)
                 .callApi()
                                 .then()
                                 .specification(successResponse())
                                 .extract().response());
 
-        // Check that answers size is 2
-        assertThat(answers.size(), IsEqual.equalTo(2));
-        assertThat(answers.get(0).toString(), isEmptyOrNullString());
+        // Check that answers size is 1
+        assertThat(answers, hasSize(1));
+        assertThat(answers.get(0).toString(), containsString(TestText.RU_WORD.corrVer()));
 
     }
 }
