@@ -15,20 +15,23 @@ public class TestYandexSpellerSOAP {
     @Test
     public void simpleCall(){
                 YandexSpellerSOAP
-                        .with().text(WRONG_WORD_EN)
+                        .with().text(SimpleWord.BROTHER.wrongVer())
                         .callSOAP()
                         .then()
-                        .body(Matchers.stringContainsInOrder(Arrays.asList(WRONG_WORD_EN, RIGHT_WORD_EN)));
+                        .body(Matchers.stringContainsInOrder
+                                (Arrays.asList(SimpleWord.BROTHER.wrongVer(), SimpleWord.BROTHER.corrVer())));
     }
 
     @Test
     public void useRequestBuilderToChangeParams(){
         YandexSpellerSOAP.with()
-                .language(Languages.EN)
-                .text(WRONG_WORD_EN)
+                .language(Language.EN)
+                .text(SimpleWord.BROTHER.wrongVer())
                 .options("6")
+                .action(SoapAction.CHECK_TEXTS)
                 .callSOAP()
                 .then()
-                .body(Matchers.stringContainsInOrder(Arrays.asList(WRONG_WORD_EN, RIGHT_WORD_EN)));
+                .body(Matchers.stringContainsInOrder
+                        (Arrays.asList(SimpleWord.BROTHER.wrongVer(), SimpleWord.BROTHER.corrVer())));
     }
 }

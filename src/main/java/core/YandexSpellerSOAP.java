@@ -10,7 +10,7 @@ import java.util.HashMap;
 import static core.constants.YandexSpellerConstants.*;
 
 /**
- * Created by yulia_atlasova@epam.com on 22/06/2017.
+ * Created by yulia_atlasova@epam.com.
  * Describes Yandex Speller SOAP request.
  */
 public class YandexSpellerSOAP {
@@ -18,7 +18,6 @@ public class YandexSpellerSOAP {
     static RequestSpecification spellerSOAPreqSpec = new RequestSpecBuilder()
             .addHeader("Accept-Encoding", "gzip,deflate")
             .setContentType("text/xml;charset=UTF-8")
-            .addHeader("SOAPAction", "http://speller.yandex.net/services/spellservice/checkText")
             .addHeader("Host", "speller.yandex.net")
             .setBaseUri("http://speller.yandex.net/services/spellservice")
             .build();
@@ -27,26 +26,32 @@ public class YandexSpellerSOAP {
     private YandexSpellerSOAP(){}
 
     private HashMap<String, String> params = new HashMap<>();
+    private SoapAction action = SoapAction.CHECK_TEXT;
 
     public static class SOAPBuilder {
-        YandexSpellerSOAP spellerSOAP;
+        YandexSpellerSOAP soapReq;
 
         private SOAPBuilder(YandexSpellerSOAP soap) {
-            spellerSOAP = soap;
+            this.soapReq = soap;
+        }
+
+        public YandexSpellerSOAP.SOAPBuilder action(SoapAction action){
+            soapReq.action = action;
+            return this;
         }
 
         public YandexSpellerSOAP.SOAPBuilder text(String text) {
-            spellerSOAP.params.put(PARAM_TEXT, text);
+            soapReq.params.put(PARAM_TEXT, text);
             return this;
         }
 
         public YandexSpellerSOAP.SOAPBuilder options(String options) {
-            spellerSOAP.params.put(PARAM_OPTIONS, "\"" + options + "\"");
+            soapReq.params.put(PARAM_OPTIONS, options);
             return this;
         }
 
-        public YandexSpellerSOAP.SOAPBuilder language(Languages language) {
-            spellerSOAP.params.put(PARAM_LANG,   "\"" + language.languageCode + "\"");
+        public YandexSpellerSOAP.SOAPBuilder language(Language language) {
+            soapReq.params.put(PARAM_LANG,   language.langCode());
             return this;
         }
 
@@ -54,16 +59,18 @@ public class YandexSpellerSOAP {
             String soapBody="<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:spel=\"http://speller.yandex.net/services/spellservice\">\n" +
                     "   <soapenv:Header/>\n" +
                     "   <soapenv:Body>\n" +
-                    "      <spel:CheckTextRequest lang=" + (spellerSOAP.params.getOrDefault(PARAM_LANG, "\"en\""))
-                    +  " options=" + (spellerSOAP.params.getOrDefault(PARAM_OPTIONS, "\"0\""))+ " format=\"\">\n" +
-                    "         <spel:text>"+ (spellerSOAP.params.getOrDefault(PARAM_TEXT, WRONG_WORD_EN)) + "</spel:text>\n" +
-                    "      </spel:CheckTextRequest>\n" +
+                    "      <spel:" + soapReq.action.reqName + " lang=" + QUOTES + (soapReq.params.getOrDefault(PARAM_LANG, "en")) + QUOTES
+                    +  " options=" + QUOTES + (soapReq.params.getOrDefault(PARAM_OPTIONS, "0"))+ QUOTES
+                    + " format=\"\">\n" +
+                    "         <spel:text>"+ (soapReq.params.getOrDefault(PARAM_TEXT, SimpleWord.BROTHER.wrongVer())) + "</spel:text>\n" +
+                    "      </spel:"+ soapReq.action.reqName + ">\n" +
                     "   </soapenv:Body>\n" +
                     "</soapenv:Envelope>";
 
 
             return RestAssured.with()
                     .spec(spellerSOAPreqSpec)
+                    .header("SOAPAction", "http://speller.yandex.net/services/spellservice/" + soapReq.action.method)
                     .body(soapBody)
                     .log().all().with()
                     .post().prettyPeek();
