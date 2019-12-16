@@ -79,6 +79,7 @@ public class TestYandexSpellerJSON {
         RestAssured
                 .given(YandexSpellerCheckTextApi.baseRequestConfiguration())
                 .param(PARAM_TEXT, TestText.BROTHER.wrongVer())
+                .log().everything()
                 .get().prettyPeek()
                 .then().specification(successResponse());
     }
@@ -99,7 +100,7 @@ public class TestYandexSpellerJSON {
     public void validateSpellerAnswerAsAnObject() {
         List<YandexSpellerAnswer> answers =
                 YandexSpellerCheckTextApi.getYandexSpellerAnswers(
-                        YandexSpellerCheckTextApi.with().text("motherr fatherr," + TestText.BROTHER.wrongVer()).callApi());
+                        YandexSpellerCheckTextApi .with() .text("motherr fatherr," + TestText.BROTHER.wrongVer()).callApi());
         assertThat("expected number of answers is wrong.", answers.size(), equalTo(3));
         assertThat(answers.get(0).word, equalTo("motherr"));
         assertThat(answers.get(1).word, equalTo("fatherr"));

@@ -88,7 +88,8 @@ public class YandexSpellerCheckTextApi {
         return new RequestSpecBuilder()
                 .setAccept(ContentType.XML)
                 .setRelaxedHTTPSValidation()
-                .addHeader("custom header2", "header2.value")
+
+                .addHeader("custom header343434", "header343434342.value")
                 .addQueryParam("requestID", new Random().nextLong())
                 .setBaseUri(YANDEX_SPELLER_API_URI)
                 .build();
